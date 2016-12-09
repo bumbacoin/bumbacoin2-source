@@ -27,6 +27,16 @@ using namespace boost;
 
 CWallet* pwalletMain;
 CClientUIInterface uiInterface;
+
+#ifdef WIN32
+// Win32 LevelDB doesn't use filedescriptors, and the ones used for
+// accessing block files, don't count towards to fd_set size limit
+// anyway.
+#define MIN_CORE_FILEDESCRIPTORS 0
+#else
+#define MIN_CORE_FILEDESCRIPTORS 150
+#endif
+
 std::string strWalletFileName;
 bool fConfChange;
 bool fEnforceCanonical;
@@ -425,6 +435,16 @@ bool AppInit2()
         SoftSetBoolArg("-rescan", true);
     }
 
+    // Make sure enough file descriptors are available
+    int nBind = std::max((int)mapArgs.count("-bind"), 1);
+    nMaxConnections = GetArg("-maxconnections", 125);
+    nMaxConnections = std::max(std::min(nMaxConnections, FD_SETSIZE - nBind - MIN_CORE_FILEDESCRIPTORS), 0);
+    int nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS);
+    if (nFD < MIN_CORE_FILEDESCRIPTORS)
+        return InitError(_("Not enough file descriptors available."));
+    if (nFD - MIN_CORE_FILEDESCRIPTORS < nMaxConnections)
+        nMaxConnections = nFD - MIN_CORE_FILEDESCRIPTORS;
+        
     // ********************************************************* Step 3: parameter-to-internal-flags
 
     fDebug = GetBoolArg("-debug");
@@ -528,6 +548,7 @@ bool AppInit2()
         printf("Startup time: %s\n", DateTimeStrFormat("%x %H:%M:%S", GetTime()).c_str());
     printf("Default data directory %s\n", GetDefaultDataDir().string().c_str());
     printf("Used data directory %s\n", strDataDir.c_str());
+    printf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, nFD);
     std::ostringstream strErrors;
 
     if (fDaemon)
