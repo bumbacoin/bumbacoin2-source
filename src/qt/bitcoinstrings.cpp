@@ -92,7 +92,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", "Send trace/debug info to debugger"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Username for JSON-RPC connections"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Password for JSON-RPC connections"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
-"Listen for JSON-RPC connections on <port> (default: 15715 or testnet: 25715)"),
+"Listen for JSON-RPC connections on <port> (default: 10101 or testnet: 101111)"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Allow JSON-RPC connections from specified IP address"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Send commands to node running on <ip> (default: 127.0.0.1)"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
