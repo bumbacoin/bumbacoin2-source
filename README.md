@@ -6,7 +6,7 @@ x11 PoS
 ticker BUMBA
 
 1 minute blocks
-20 million coins, 2% interest
+20 million coins, fixed 2 coin per block reward.
 
 bumbacoin2 was created as a PoS conversion coin for bumbacoin.
 
