@@ -72,6 +72,8 @@ const string strMessageMagic = "bumbacoin2 Signed Message:\n";
 int64_t nTransactionFee = MIN_TX_FEE;
 int64_t nReserveBalance = 0;
 int64_t nMinimumInputValue = 0;
+int64_t nCombineThreshold = DEF_COMBINE_AMOUNT;
+int64_t nSplitThreshold = DEF_SPLIT_AMOUNT;
 
 extern enum Checkpoints::CPMode CheckpointsMode;
 

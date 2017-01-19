@@ -1,1 +1,5 @@
 *.DS_Store
+qt_5_3_2
+bumbacoin2-qt.pro.user
+#src/qt/locale/*.qm
+*.user

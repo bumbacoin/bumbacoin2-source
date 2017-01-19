@@ -40,6 +40,11 @@ static const int64_t COIN_YEAR_REWARD = 2 * CENT; // 2% per year
 static const int64_t MAX_MINT_PROOF_OF_STAKE = 0.02 * COIN;	// 2% annual interest
 static const int MODIFIER_INTERVAL_SWITCH = 1;
 
+static const int64_t DEF_COMBINE_AMOUNT = 5000 * COIN; 
+static const int64_t MAX_COMBINE_AMOUNT = 100000 * COIN;
+static const int64_t DEF_SPLIT_AMOUNT = 50 * COIN; 
+static const int64_t MAX_SPLIT_AMOUNT = 5000 * COIN;
+
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 // Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp.
 static const unsigned int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
@@ -84,6 +89,9 @@ extern std::map<uint256, CBlock*> mapOrphanBlocks;
 extern int64_t nTransactionFee;
 extern int64_t nReserveBalance;
 extern int64_t nMinimumInputValue;
+extern int64_t nCombineThreshold;
+extern int64_t nSplitThreshold;
+
 extern bool fUseFastIndex;
 extern unsigned int nDerivationMethodIndex;
 
