@@ -88,7 +88,7 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("balance",       ValueFromAmount(pwalletMain->GetBalance())));
     obj.push_back(Pair("newmint",       ValueFromAmount(pwalletMain->GetNewMint())));
     obj.push_back(Pair("stake",         ValueFromAmount(pwalletMain->GetStake())));
-	obj.push_back(Pair("spli threshold",   ValueFromAmount(nSplitThreshold)));
+	obj.push_back(Pair("split threshold",   ValueFromAmount(nSplitThreshold)));
 	obj.push_back(Pair("combine threshold",   ValueFromAmount(nCombineThreshold)));
     obj.push_back(Pair("blocks",        (int)nBestHeight));
     obj.push_back(Pair("timeoffset",    (boost::int64_t)GetTimeOffset()));
