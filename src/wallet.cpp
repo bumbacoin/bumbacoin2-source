@@ -16,8 +16,7 @@
 using namespace std;
 extern unsigned int nStakeMaxAge;
 
-unsigned int nStakeSplitAge = 1 * 24 * 60 * 60;
-int64_t nStakeCombineThreshold = 1000 * COIN;
+unsigned int nStakeSplitAge = 1 * 9 * 60 * 60;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1676,7 +1675,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 vwtxPrev.push_back(pcoin.first);
                 txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
-                if (GetWeight(block.GetBlockTime(), (int64_t)txNew.nTime) < nStakeSplitAge)
+                if ((nCredit >= nSplitThreshold) && (GetWeight(block.GetBlockTime(), (int64_t)txNew.nTime) < nStakeSplitAge))
                     txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
                 if (fDebug && GetBoolArg("-printcoinstake"))
                     printf("CreateCoinStake : added kernel type=%d\n", whichType);
@@ -1705,13 +1704,13 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             if (txNew.vin.size() >= 100)
                 break;
             // Stop adding more inputs if value is already pretty significant
-            if (nCredit >= nStakeCombineThreshold)
+            if (nCredit >= nCombineThreshold)
                 break;
             // Stop adding inputs if reached reserve limit
             if (nCredit + pcoin.first->vout[pcoin.second].nValue > nBalance - nReserveBalance)
                 break;
             // Do not add additional significant input
-            if (pcoin.first->vout[pcoin.second].nValue >= nStakeCombineThreshold)
+            if (pcoin.first->vout[pcoin.second].nValue >= nCombineThreshold)
                 continue;
             // Do not add input that is still too young
             if (nTimeWeight < nStakeMinAge)
