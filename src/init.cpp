@@ -510,7 +510,7 @@ bool AppInit2()
            if (nSplitThreshold > MAX_SPLIT_AMOUNT)
                nSplitThreshold = MAX_SPLIT_AMOUNT;
        }
-       printf("splitthreshold set to %"PRI64d"\n",nSplitThreshold);
+       printf("splitthreshold set to %"PRId64"\n",nSplitThreshold);
     }
 
     if (mapArgs.count("-combinethreshold"))
@@ -521,7 +521,7 @@ bool AppInit2()
            if (nCombineThreshold > MAX_COMBINE_AMOUNT)
                nCombineThreshold = MAX_COMBINE_AMOUNT;
        }
-       printf("combinethreshold set to %"PRI64d"\n",nCombineThreshold);
+       printf("combinethreshold set to %"PRId64"\n",nCombineThreshold);
     }
     
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
