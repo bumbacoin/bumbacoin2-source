@@ -38,6 +38,8 @@ CBigNum bnProofOfWorkLimit(~uint256(0) >> 20);
 CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
+static const int64_t nTargetTimespan;
+
 unsigned int nTargetSpacing = 1 * 60; // 1 minute
 unsigned int nStakeMinAge = 1* 10 * 60; // 10 minutes
 unsigned int nStakeMaxAge = 30 * 24 * 60 * 60; // 30 days
@@ -1012,7 +1014,6 @@ int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
     return nSubsidy + nFees;
 }
 
-static const int64_t nTargetTimespan = 10 * 60;  // 10 mins
 //
 // maximum nBits value could possible be required nTime after
 //
@@ -1073,9 +1074,17 @@ static unsigned int GetNextTargetRequired_(const CBlockIndex* pindexLast, bool f
     if (pindexPrevPrev->pprev == NULL)
         return bnTargetLimit.GetCompact(); // second block
 
+	// set values with fork height
+	if(pindexBest->nHeight < HARD_FORK_DIFF_FIX )
+		{	int64_t nTargetTimespan = 10 * 60; }
+	else if (pindexBest->nHeight >= HARD_FORK_DIFF_FIX )
+		{	int64_t nTargetTimespan = 24 * 60 * 60; }
+
+
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
-    if (nActualSpacing < 0)
-        nActualSpacing = nTargetSpacing;
+	if(pindexBest->nHeight < HARD_FORK_DIFF_FIX )
+	{	if (nActualSpacing < 0)
+        	nActualSpacing = nTargetSpacing;	}
 
     // ppcoin: target change every block
     // ppcoin: retarget with exponential moving toward target spacing
@@ -2806,7 +2815,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
-        if (pfrom->nVersion < MIN_PROTO_VERSION)
+		if (pfrom->nVersion < (pindexBest->nHeight < HARD_FORK_DIFF_FIX ? MIN_PROTO_VERSION : MIN_PROTO_VERSION_FORK))
         {
             printf("partner %s using obsolete version %i; disconnecting\n", pfrom->addr.ToString().c_str(), pfrom->nVersion);
             pfrom->fDisconnect = true;
