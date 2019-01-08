@@ -38,12 +38,13 @@ CBigNum bnProofOfWorkLimit(~uint256(0) >> 20);
 CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
-static const int64_t nTargetTimespan;
-
 unsigned int nTargetSpacing = 1 * 60; // 1 minute
 unsigned int nStakeMinAge = 1* 10 * 60; // 10 minutes
 unsigned int nStakeMaxAge = 30 * 24 * 60 * 60; // 30 days
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
+
+static const int64_t nTargetTimespan = 10 * 60;
+static const int64_t nTargetTimespan_2 = 24 * 60 * 60;
 
 int nCoinbaseMaturity = 40;
 CBlockIndex* pindexGenesisBlock = NULL;
@@ -1074,13 +1075,6 @@ static unsigned int GetNextTargetRequired_(const CBlockIndex* pindexLast, bool f
     if (pindexPrevPrev->pprev == NULL)
         return bnTargetLimit.GetCompact(); // second block
 
-	// set values with fork height
-	if(pindexBest->nHeight < HARD_FORK_DIFF_FIX )
-		{	int64_t nTargetTimespan = 10 * 60; }
-	else if (pindexBest->nHeight >= HARD_FORK_DIFF_FIX )
-		{	int64_t nTargetTimespan = 24 * 60 * 60; }
-
-
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
 	if(pindexBest->nHeight < HARD_FORK_DIFF_FIX )
 	{	if (nActualSpacing < 0)
@@ -1090,7 +1084,7 @@ static unsigned int GetNextTargetRequired_(const CBlockIndex* pindexLast, bool f
     // ppcoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
-    int64_t nInterval = nTargetTimespan / nTargetSpacing;
+	int64_t nInterval = (pindexBest->nHeight < HARD_FORK_DIFF_FIX ? nTargetTimespan : nTargetTimespan_2) / nTargetSpacing;
     bnNew *= ((nInterval - 1) * nTargetSpacing + nActualSpacing + nActualSpacing);
     bnNew /= ((nInterval + 1) * nTargetSpacing);
 
