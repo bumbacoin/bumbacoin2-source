@@ -38,7 +38,9 @@ CBigNum bnProofOfWorkLimit(~uint256(0) >> 20);
 CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
-unsigned int nTargetSpacing = 1 * 60; // 1 minute
+unsigned int nTargetSpacing = 60 ;
+unsigned int nTargetSpacing_2 = 150;
+
 unsigned int nStakeMinAge = 1* 10 * 60; // 10 minutes
 unsigned int nStakeMaxAge = 30 * 24 * 60 * 60; // 30 days
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
@@ -1002,10 +1004,15 @@ int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
       return nSubsidy + nFees;
       }
 
-
-    else // change to fixed reward of 2 coins
+    else if (pindexBest->nHeight > LAST_POW_BLOCK && pindexBest->nHeight < HARD_FORK_DIFF_FIX)
       {
       int64_t nSubsidy = 2 * COIN;
+      return nSubsidy + nFees;
+      }
+
+    else // increase reward to match increased block time
+      {
+      int64_t nSubsidy = 5 * COIN;
       return nSubsidy + nFees;
       }
 
@@ -1079,14 +1086,15 @@ static unsigned int GetNextTargetRequired_(const CBlockIndex* pindexLast, bool f
 	if(pindexBest->nHeight < HARD_FORK_DIFF_FIX )
 	{	if (nActualSpacing < 0)
         	nActualSpacing = nTargetSpacing;	}
+	unsigned int nSpacing = pindexBest->nHeight < HARD_FORK_DIFF_FIX ? nTargetSpacing : nTargetSpacing_2;
 
     // ppcoin: target change every block
     // ppcoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
-	int64_t nInterval = (pindexBest->nHeight < HARD_FORK_DIFF_FIX ? nTargetTimespan : nTargetTimespan_2) / nTargetSpacing;
-    bnNew *= ((nInterval - 1) * nTargetSpacing + nActualSpacing + nActualSpacing);
-    bnNew /= ((nInterval + 1) * nTargetSpacing);
+	int64_t nInterval = (pindexBest->nHeight < HARD_FORK_DIFF_FIX ? nTargetTimespan : nTargetTimespan_2) / nSpacing;
+    bnNew *= ((nInterval - 1) * nSpacing + nActualSpacing + nActualSpacing);
+    bnNew /= ((nInterval + 1) * nSpacing);
 
     if (bnNew <= 0 || bnNew > bnTargetLimit)
         bnNew = bnTargetLimit;
