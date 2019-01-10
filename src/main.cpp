@@ -41,7 +41,8 @@ CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 unsigned int nTargetSpacing = 60 ;
 unsigned int nTargetSpacing_2 = 150;
 
-unsigned int nStakeMinAge = 1* 10 * 60; // 10 minutes
+unsigned int nStakeMinAge = 1 * 10 * 60; // 10 minutes
+unsigned int nStakeMinAge_2 = 24 * 60 * 60; // 24 hours
 unsigned int nStakeMaxAge = 30 * 24 * 60 * 60; // 30 days
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
 
@@ -1902,7 +1903,7 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const
         CBlock block;
         if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
             return false; // unable to read block of previous transaction
-        if (block.GetBlockTime() + nStakeMinAge > nTime)
+        if (block.GetBlockTime() + (pindexBest->nHeight < HARD_FORK_DIFF_FIX ? nStakeMinAge : nStakeMinAge_2) > nTime)
             continue; // only count coins meeting min age requirement
 
         int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
@@ -2464,7 +2465,8 @@ bool LoadBlockIndex(bool fAllowNew)
     if (fTestNet)
     {
         bnProofOfWorkLimit = bnProofOfWorkLimitTestNet; // PoW base target is fixed in testnet
-        nStakeMinAge = 20 * 60; // test net min age is 20 min
+        nStakeMinAge = 1 * 60; // test net min age is 20 min
+        nStakeMinAge_2 = 1 * 90; // test net min age is 20 min
         nCoinbaseMaturity = 10; // test maturity is 10 blocks
     }
 
@@ -3151,7 +3153,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 printf("  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString().substr(0,20).c_str());
                 // ppcoin: tell downloading node about the latest block if it's
                 // without risk being rejected due to stake connection check
-                if (hashStop != hashBestChain && pindex->GetBlockTime() + nStakeMinAge > pindexBest->GetBlockTime())
+                if (hashStop != hashBestChain && pindex->GetBlockTime() + (pindexBest->nHeight < HARD_FORK_DIFF_FIX ? nStakeMinAge : nStakeMinAge_2) > pindexBest->GetBlockTime())
                     pfrom->PushInventory(CInv(MSG_BLOCK, hashBestChain));
                 break;
             }

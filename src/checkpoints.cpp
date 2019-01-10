@@ -347,7 +347,7 @@ namespace Checkpoints
         assert(mapBlockIndex.count(hashSyncCheckpoint));
         const CBlockIndex* pindexSync = mapBlockIndex[hashSyncCheckpoint];
         return (nBestHeight >= pindexSync->nHeight + nCoinbaseMaturity ||
-                pindexSync->GetBlockTime() + nStakeMinAge < GetAdjustedTime());
+                pindexSync->GetBlockTime() + (pindexBest->nHeight < HARD_FORK_DIFF_FIX ? nStakeMinAge : nStakeMinAge_2) < GetAdjustedTime());
     }
 }
 
