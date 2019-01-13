@@ -27,6 +27,7 @@ class CRequestTracker;
 class CNode;
 
 static const int LAST_POW_BLOCK = 465000;
+static const int64_t HARD_FORK_DIFF_FIX = 2280000; //allow -ve timestamps to effect difficulty, increase timespan and blocksize
 
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
@@ -56,7 +57,7 @@ static const int fHaveUPnP = false;
 #endif
 
 static const uint256 hashGenesisBlock("0x00000e2781c9a29cbd75ee5a69394a950fc72276236d28e04f36d24034a293ae");
-static const uint256 hashGenesisBlockTestNet("0x00000e2781c9a29cbd75ee5a69394a950fc72276236d28e04f36d24034a293ae");
+static const uint256 hashGenesisBlockTestNet("0x000065b304016af954f8a57516beb7a910efb51b613fd8ea352167fe4403d8a7");
 inline int64_t PastDrift(int64_t nTime)   { return nTime - 10 * 60; } // up to 10 minutes from the past
 inline int64_t FutureDrift(int64_t nTime) { return nTime + 10 * 60; } // up to 10 minutes from the future
 
@@ -67,6 +68,7 @@ extern std::map<uint256, CBlockIndex*> mapBlockIndex;
 extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
 extern CBlockIndex* pindexGenesisBlock;
 extern unsigned int nStakeMinAge;
+extern unsigned int nStakeMinAge_2;
 extern unsigned int nNodeLifespan;
 extern int nCoinbaseMaturity;
 extern int nBestHeight;
