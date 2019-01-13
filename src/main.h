@@ -27,7 +27,7 @@ class CRequestTracker;
 class CNode;
 
 static const int LAST_POW_BLOCK = 465000;
-static const int64_t HARD_FORK_DIFF_FIX = 9999999; //allow -ve timestamps to effect difficulty, increase timespan and blocksize
+static const int64_t HARD_FORK_DIFF_FIX = 2280000; //allow -ve timestamps to effect difficulty, increase timespan and blocksize
 
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
